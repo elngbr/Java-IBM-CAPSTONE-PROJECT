@@ -1,0 +1,217 @@
+package com.smartclinic.controller;
+
+import com.smartclinic.model.Prescription;
+import com.smartclinic.repository.PrescriptionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * REST Controller for Prescription entity operations.
+ * Provides CRUD endpoints for prescription management in MongoDB.
+ * Required for prescription management in the Smart Clinic Management System.
+ */
+@RestController
+@RequestMapping("/api/prescriptions")
+@CrossOrigin(origins = "*", maxAge = 3600)
+public class PrescriptionController {
+
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
+
+    /**
+     * Create a new prescription.
+     * POST /api/prescriptions
+     */
+    @PostMapping
+    public ResponseEntity<?> createPrescription(@Valid @RequestBody Prescription prescription) {
+        try {
+            // Check if prescription already exists for the appointment
+            if (prescription.getAppointmentId() != null && 
+                prescriptionRepository.existsByAppointmentId(prescription.getAppointmentId())) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Prescription already exists for this appointment"));
+            }
+            
+            Prescription savedPrescription = prescriptionRepository.save(prescription);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedPrescription);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Get all prescriptions.
+     * GET /api/prescriptions
+     */
+    @GetMapping
+    public ResponseEntity<List<Prescription>> getAllPrescriptions() {
+        List<Prescription> prescriptions = prescriptionRepository.findAllOrderByPatientName();
+        return ResponseEntity.ok(prescriptions);
+    }
+
+    /**
+     * Get prescription by ID.
+     * GET /api/prescriptions/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Prescription> getPrescriptionById(@PathVariable String id) {
+        Optional<Prescription> prescription = prescriptionRepository.findById(id);
+        return prescription.map(ResponseEntity::ok)
+                         .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Update prescription by ID.
+     * PUT /api/prescriptions/{id}
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updatePrescription(@PathVariable String id, @Valid @RequestBody Prescription prescriptionDetails) {
+        try {
+            Optional<Prescription> prescriptionOpt = prescriptionRepository.findById(id);
+            
+            if (prescriptionOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Prescription prescription = prescriptionOpt.get();
+            
+            // Update fields
+            prescription.setAppointmentId(prescriptionDetails.getAppointmentId());
+            prescription.setPatientId(prescriptionDetails.getPatientId());
+            prescription.setDoctorId(prescriptionDetails.getDoctorId());
+            prescription.setPrescriptionDate(prescriptionDetails.getPrescriptionDate());
+            
+            if (prescriptionDetails.getPatientInfo() != null) {
+                prescription.setPatientInfo(prescriptionDetails.getPatientInfo());
+            }
+            if (prescriptionDetails.getDoctorInfo() != null) {
+                prescription.setDoctorInfo(prescriptionDetails.getDoctorInfo());
+            }
+            if (prescriptionDetails.getMedications() != null) {
+                prescription.setMedications(prescriptionDetails.getMedications());
+            }
+            
+            Prescription updatedPrescription = prescriptionRepository.save(prescription);
+            return ResponseEntity.ok(updatedPrescription);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Delete prescription by ID.
+     * DELETE /api/prescriptions/{id}
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePrescription(@PathVariable String id) {
+        if (prescriptionRepository.existsById(id)) {
+            prescriptionRepository.deleteById(id);
+            return ResponseEntity.ok().body(Map.of("message", "Prescription deleted successfully"));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Get prescriptions by patient name.
+     * GET /api/prescriptions/patient/{patientName}
+     */
+    @GetMapping("/patient/{patientName}")
+    public ResponseEntity<List<Prescription>> getPrescriptionsByPatientName(@PathVariable String patientName) {
+        List<Prescription> prescriptions = prescriptionRepository.findByPatientNameIgnoreCase(patientName);
+        return ResponseEntity.ok(prescriptions);
+    }
+
+    /**
+     * Get prescription by appointment ID.
+     * GET /api/prescriptions/appointment/{appointmentId}
+     */
+    @GetMapping("/appointment/{appointmentId}")
+    public ResponseEntity<Prescription> getPrescriptionByAppointmentId(@PathVariable Long appointmentId) {
+        Optional<Prescription> prescription = prescriptionRepository.findByAppointmentId(appointmentId);
+        return prescription.map(ResponseEntity::ok)
+                         .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Search prescriptions by medication.
+     * GET /api/prescriptions/medication?name={medication}
+     */
+    @GetMapping("/medication")
+    public ResponseEntity<List<Prescription>> searchPrescriptionsByMedication(@RequestParam String name) {
+        List<Prescription> prescriptions = prescriptionRepository.findByMedicationContainingIgnoreCase(name);
+        return ResponseEntity.ok(prescriptions);
+    }
+
+    /**
+     * Search prescriptions by dosage.
+     * GET /api/prescriptions/dosage/{dosage}
+     */
+    @GetMapping("/dosage/{dosage}")
+    public ResponseEntity<List<Prescription>> getPrescriptionsByDosage(@PathVariable String dosage) {
+        List<Prescription> prescriptions = prescriptionRepository.findByDosage(dosage);
+        return ResponseEntity.ok(prescriptions);
+    }
+
+    /**
+     * Search prescriptions by doctor notes.
+     * GET /api/prescriptions/search/notes?text={searchText}
+     */
+    @GetMapping("/search/notes")
+    public ResponseEntity<List<Prescription>> searchPrescriptionsByNotes(@RequestParam String text) {
+        List<Prescription> prescriptions = prescriptionRepository.findByDoctorNotesContaining(text);
+        return ResponseEntity.ok(prescriptions);
+    }
+
+    /**
+     * Get recent prescriptions.
+     * GET /api/prescriptions/recent
+     */
+    @GetMapping("/recent")
+    public ResponseEntity<List<Prescription>> getRecentPrescriptions() {
+        List<Prescription> prescriptions = prescriptionRepository.findRecentPrescriptions();
+        return ResponseEntity.ok(prescriptions);
+    }
+
+    /**
+     * Get prescription statistics.
+     * GET /api/prescriptions/statistics
+     */
+    @GetMapping("/statistics")
+    public ResponseEntity<Map<String, Object>> getPrescriptionStatistics() {
+        Long totalCount = prescriptionRepository.countTotalPrescriptions();
+        List<Prescription> allMedications = prescriptionRepository.findAllMedications();
+        
+        Map<String, Object> statistics = Map.of(
+            "totalPrescriptions", totalCount,
+            "totalMedications", allMedications.size()
+        );
+        
+        return ResponseEntity.ok(statistics);
+    }
+
+    /**
+     * Get prescriptions by multiple appointment IDs.
+     * POST /api/prescriptions/by-appointments
+     */
+    @PostMapping("/by-appointments")
+    public ResponseEntity<List<Prescription>> getPrescriptionsByAppointmentIds(@RequestBody List<Long> appointmentIds) {
+        List<Prescription> prescriptions = prescriptionRepository.findByAppointmentIdIn(appointmentIds);
+        return ResponseEntity.ok(prescriptions);
+    }
+
+    /**
+     * Check if prescription exists for appointment.
+     * GET /api/prescriptions/exists/appointment/{appointmentId}
+     */
+    @GetMapping("/exists/appointment/{appointmentId}")
+    public ResponseEntity<Map<String, Boolean>> checkPrescriptionExists(@PathVariable Long appointmentId) {
+        boolean exists = prescriptionRepository.existsByAppointmentId(appointmentId);
+        return ResponseEntity.ok(Map.of("exists", exists));
+    }
+}
