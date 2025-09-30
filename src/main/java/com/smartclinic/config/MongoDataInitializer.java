@@ -3,6 +3,7 @@ package com.smartclinic.config;
 import com.smartclinic.model.Prescription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.List;
  * Populates MongoDB with sample prescription documents
  */
 @Component
+@ConditionalOnBean(MongoTemplate.class)
 public class MongoDataInitializer implements CommandLineRunner {
 
     @Autowired

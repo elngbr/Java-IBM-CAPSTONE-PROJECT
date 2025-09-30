@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Administration</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚙️ System Administration</h1>
+            <p>Manage users, system settings, and administrative functions</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <a href="/" class="nav-item">🏠 Dashboard</a>
+            <a href="/patients" class="nav-item">👥 Patients</a>
+            <a href="/doctors" class="nav-item">👨‍⚕️ Doctors</a>
+            <a href="/appointments" class="nav-item">📅 Appointments</a>
+            <a href="/admin" class="nav-item active">⚙️ Admin</a>
+        </nav>
+
+        <!-- Admin Functions -->
+        <div class="card-grid">
+            <div class="card">
+                <h3>👤 User Management</h3>
+                <p>Manage admin users, roles, and permissions.</p>
+                <button onclick="showUserManagement()" class="btn">Manage Users</button>
+            </div>
+            
+            <div class="card">
+                <h3>📊 System Reports</h3>
+                <p>Generate reports on patients, appointments, and system usage.</p>
+                <button onclick="showReports()" class="btn">View Reports</button>
+            </div>
+            
+            <div class="card">
+                <h3>💾 Database Management</h3>
+                <p>Access database console and manage data directly.</p>
+                <a href="/h2-console" target="_blank" class="btn">Database Console</a>
+            </div>
+            
+            <div class="card">
+                <h3>🔧 System Settings</h3>
+                <p>Configure system parameters and preferences.</p>
+                <button onclick="showSettings()" class="btn">Settings</button>
+            </div>
+            
+            <div class="card">
+                <h3>📋 Audit Logs</h3>
+                <p>View system activity and audit trail.</p>
+                <button onclick="showAuditLogs()" class="btn">View Logs</button>
+            </div>
+            
+            <div class="card">
+                <h3>🚀 System Status</h3>
+                <p>Monitor system health and performance.</p>
+                <button onclick="checkSystemStatus()" class="btn">Check Status</button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="adminContent" class="card" style="display: none;">
+            <h3 id="contentTitle">Content</h3>
+            <div id="contentBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Quick System Info -->
+        <div class="card">
+            <h3>📈 System Overview</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="systemPatients">-</div>
+                    <div class="stat-label">Total Patients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="systemDoctors">-</div>
+                    <div class="stat-label">Total Doctors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="systemAppointments">-</div>
+                    <div class="stat-label">Total Appointments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">Active</div>
+                    <div class="stat-label">System Status</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load system stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemOverview();
+        });
+
+        // Load system overview stats
+        async function loadSystemOverview() {
+            try {
+                const [patients, doctors, appointments] = await Promise.all([
+                    axios.get('/api/patients'),
+                    axios.get('/api/doctors'),
+                    axios.get('/api/appointments')
+                ]);
+                
+                document.getElementById('systemPatients').textContent = patients.data.length;
+                document.getElementById('systemDoctors').textContent = doctors.data.length;
+                document.getElementById('systemAppointments').textContent = appointments.data.length;
+                
+            } catch (error) {
+                console.error('Error loading system overview:', error);
+                document.getElementById('systemPatients').textContent = '0';
+                document.getElementById('systemDoctors').textContent = '0';
+                document.getElementById('systemAppointments').textContent = '0';
+            }
+        }
+
+        // Show content area with title and body
+        function showContent(title, body) {
+            document.getElementById('contentTitle').textContent = title;
+            document.getElementById('contentBody').innerHTML = body;
+            document.getElementById('adminContent').style.display = 'block';
+            document.getElementById('adminContent').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Admin function implementations
+        function showUserManagement() {
+            const content = `
+                <p>User Management System</p>
+                <div class="alert alert-info">
+                    <strong>Coming Soon:</strong> Full user management interface with role-based access control.
+                </div>
+                <ul>
+                    <li>Create and manage admin accounts</li>
+                    <li>Assign roles and permissions</li>
+                    <li>Monitor user activity</li>
+                    <li>Password reset functionality</li>
+                </ul>
+            `;
+            showContent('User Management', content);
+        }
+
+        function showReports() {
+            const content = `
+                <p>System Reports and Analytics</p>
+                <div class="alert alert-info">
+                    <strong>Available Reports:</strong>
+                </div>
+                <ul>
+                    <li>📊 Patient Registration Trends</li>
+                    <li>📅 Appointment Statistics</li>
+                    <li>👨‍⚕️ Doctor Utilization Reports</li>
+                    <li>💼 Financial Summary</li>
+                    <li>🔍 System Usage Analytics</li>
+                </ul>
+                <button class="btn" onclick="generateSampleReport()">Generate Sample Report</button>
+            `;
+            showContent('System Reports', content);
+        }
+
+        function showSettings() {
+            const content = `
+                <p>System Configuration</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div>
+                        <h5>General Settings</h5>
+                        <ul>
+                            <li>Clinic Name: Smart Clinic</li>
+                            <li>Time Zone: Local</li>
+                            <li>Default Appointment Duration: 30 minutes</li>
+                            <li>Working Hours: 9:00 AM - 6:00 PM</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>Security Settings</h5>
+                        <ul>
+                            <li>Password Policy: Enabled</li>
+                            <li>Session Timeout: 30 minutes</li>
+                            <li>Two-Factor Auth: Available</li>
+                            <li>Audit Logging: Enabled</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            showContent('System Settings', content);
+        }
+
+        function showAuditLogs() {
+            const content = `
+                <p>System Activity Logs</p>
+                <div class="alert alert-info">
+                    <strong>Recent Activity:</strong> Last 24 hours
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Action</th>
+                            <th>User</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10:30 AM</td>
+                            <td>Patient Registered</td>
+                            <td>System</td>
+                            <td>New patient registration</td>
+                        </tr>
+                        <tr>
+                            <td>11:15 AM</td>
+                            <td>Appointment Scheduled</td>
+                            <td>Admin</td>
+                            <td>Appointment created</td>
+                        </tr>
+                        <tr>
+                            <td>02:45 PM</td>
+                            <td>Doctor Updated</td>
+                            <td>Admin</td>
+                            <td>Doctor profile modified</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            showContent('Audit Logs', content);
+        }
+
+        async function checkSystemStatus() {
+            const content = `
+                <p>System Health Check</p>
+                <div id="statusChecks">
+                    <div class="spinner"></div>
+                </div>
+            `;
+            showContent('System Status', content);
+            
+            // Simulate status checks
+            setTimeout(() => {
+                const statusContent = `
+                    <div class="alert alert-success">✅ All systems operational</div>
+                    <ul>
+                        <li>✅ Database Connection: Active</li>
+                        <li>✅ Web Server: Running (Port 8080)</li>
+                        <li>✅ API Endpoints: Responsive</li>
+                        <li>✅ Memory Usage: Normal (< 70%)</li>
+                        <li>✅ Disk Space: Available</li>
+                        <li>✅ Last Backup: Today</li>
+                    </ul>
+                    <button class="btn" onclick="checkSystemStatus()">Refresh Status</button>
+                `;
+                document.getElementById('statusChecks').innerHTML = statusContent;
+            }, 2000);
+        }
+
+        function generateSampleReport() {
+            alert('Sample Report Generated\n\nThis would generate a downloadable PDF report with:\n- Patient statistics\n- Appointment trends\n- Doctor utilization\n- System performance metrics');
+        }
+    </script>
+</body>
+</html>

@@ -38,21 +38,21 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
      * Find admins by name (case-insensitive search).
      * Used for admin search and management functionality.
      */
-    @Query("SELECT a FROM Admin a WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    @Query("SELECT a FROM Admin a WHERE LOWER(CONCAT(a.firstName, ' ', a.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Admin> findByNameContainingIgnoreCase(@Param("name") String name);
     
     /**
      * Check if email already exists (excluding current admin).
      * Used for email uniqueness validation during updates.
      */
-    @Query("SELECT COUNT(a) > 0 FROM Admin a WHERE a.email = :email AND a.id != :adminId")
+    @Query("SELECT COUNT(a) > 0 FROM Admin a WHERE a.email = :email AND a.adminId != :adminId")
     boolean existsByEmailAndIdNot(@Param("email") String email, @Param("adminId") Long adminId);
     
     /**
      * Check if username already exists (excluding current admin).
      * Used for username uniqueness validation during updates.
      */
-    @Query("SELECT COUNT(a) > 0 FROM Admin a WHERE a.username = :username AND a.id != :adminId")
+    @Query("SELECT COUNT(a) > 0 FROM Admin a WHERE a.username = :username AND a.adminId != :adminId")
     boolean existsByUsernameAndIdNot(@Param("username") String username, @Param("adminId") Long adminId);
     
     /**
@@ -80,6 +80,6 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
      * Find super admins.
      * Used for system administration and high-level access control.
      */
-    @Query("SELECT a FROM Admin a WHERE a.role = 'SUPER_ADMIN' ORDER BY a.name")
+    @Query("SELECT a FROM Admin a WHERE a.role = 'SUPER_ADMIN' ORDER BY a.firstName, a.lastName")
     List<Admin> findSuperAdmins();
 }

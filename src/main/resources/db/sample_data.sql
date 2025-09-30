@@ -1,122 +1,42 @@
--- Smart Clinic Management System - Lab Compatible Sample Data
--- This script inserts sample data matching the lab requirements
+-- Smart Clinic Management System - Sample Data
+-- This script inserts sample data compatible with the entity structure
 
-USE cms;
+-- Insert sample doctors with proper entity structure
+INSERT INTO doctors (email, password_hash, first_name, last_name, specialization, license_number, phone_number, bio, years_experience, consultation_fee, office_location, working_hours_start, working_hours_end, is_active, created_at, updated_at) VALUES
+('dr.adams@example.com', 'pass12345', 'Emily', 'Adams', 'Cardiologist', 'MD001234', '+15551012020', 'Experienced cardiologist specializing in heart diseases', 15, 200.00, 'Room 101', '09:00:00', '17:00:00', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('dr.johnson@example.com', 'secure4567', 'Mark', 'Johnson', 'Neurologist', 'MD002345', '+15552023030', 'Neurologist with expertise in brain disorders', 12, 250.00, 'Room 102', '10:00:00', '18:00:00', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('dr.lee@example.com', 'leePass987', 'Sarah', 'Lee', 'Orthopedist', 'MD003456', '+15553034040', 'Orthopedic surgeon specializing in bone and joint care', 10, 180.00, 'Room 103', '08:00:00', '16:00:00', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('dr.wilson@example.com', 'w!ls0nPwd', 'Tom', 'Wilson', 'Pediatrician', 'MD004567', '+15554045050', 'Pediatrician dedicated to children healthcare', 8, 150.00, 'Room 104', '09:00:00', '17:00:00', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('dr.brown@example.com', 'brownie123', 'Alice', 'Brown', 'Dermatologist', 'MD005678', '+15555056060', 'Dermatologist focusing on skin health and treatments', 7, 170.00, 'Room 105', '10:00:00', '18:00:00', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Insert sample admin users (lab format)
-INSERT INTO admin (username, password) VALUES
-('admin', 'admin@1234'),
-('dr_admin', 'secure123'),
-('support', 'support456');
+-- Insert sample patients with proper entity structure
+INSERT INTO patients (email, password_hash, first_name, last_name, phone_number, date_of_birth, gender, address, emergency_contact_name, emergency_contact_phone, blood_type, is_active, created_at, updated_at) VALUES
+('jane.doe@example.com', 'passJane1', 'Jane', 'Doe', '+18881111111', '1985-03-15', 'FEMALE', '101 Oak St, Cityville', 'John Doe', '+18881111112', 'A+', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('john.smith@example.com', 'smithSecure', 'John', 'Smith', '+18882222222', '1978-07-22', 'MALE', '202 Maple Rd, Townsville', 'Mary Smith', '+18882222223', 'O+', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('emily.rose@example.com', 'emilyPass99', 'Emily', 'Rose', '+18883333333', '1992-11-08', 'FEMALE', '303 Pine Ave, Villageton', 'David Rose', '+18883333334', 'B+', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('michael.j@example.com', 'airmj23', 'Michael', 'Jordan', '+18884444444', '1963-02-17', 'MALE', '404 Birch Ln, Metropolis', 'Juanita Jordan', '+18884444445', 'AB+', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('olivia.m@example.com', 'moonshine12', 'Olivia', 'Moon', '+18885555555', '1990-05-30', 'FEMALE', '505 Cedar Blvd, Springfield', 'Luna Moon', '+18885555556', 'A-', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Insert sample doctors (lab format)
-INSERT INTO doctor (email, name, password, phone, specialty) VALUES
-('dr.adams@example.com', 'Dr. Emily Adams', 'pass12345', '555-101-2020', 'Cardiologist'),
-('dr.johnson@example.com', 'Dr. Mark Johnson', 'secure4567', '555-202-3030', 'Neurologist'),
-('dr.lee@example.com', 'Dr. Sarah Lee', 'leePass987', '555-303-4040', 'Orthopedist'),
-('dr.wilson@example.com', 'Dr. Tom Wilson', 'w!ls0nPwd', '555-404-5050', 'Pediatrician'),
-('dr.brown@example.com', 'Dr. Alice Brown', 'brownie123', '555-505-6060', 'Dermatologist'),
-('dr.taylor@example.com', 'Dr. Taylor Grant', 'taylor321', '555-606-7070', 'Cardiologist'),
-('dr.white@example.com', 'Dr. Sam White', 'whiteSecure1', '555-707-8080', 'Neurologist'),
-('dr.clark@example.com', 'Dr. Emma Clark', 'clarkPass456', '555-808-9090', 'Orthopedist'),
-('dr.davis@example.com', 'Dr. Olivia Davis', 'davis789', '555-909-0101', 'Pediatrician'),
-('dr.miller@example.com', 'Dr. Henry Miller', 'millertime!', '555-010-1111', 'Dermatologist'),
-('dr.moore@example.com', 'Dr. Ella Moore', 'ellapass33', '555-111-2222', 'Cardiologist'),
-('dr.martin@example.com', 'Dr. Leo Martin', 'martinpass', '555-222-3333', 'Neurologist'),
-('dr.jackson@example.com', 'Dr. Ivy Jackson', 'jackson11', '555-333-4444', 'Orthopedist'),
-('dr.thomas@example.com', 'Dr. Owen Thomas', 'thomasPWD', '555-444-5555', 'Pediatrician'),
-('dr.hall@example.com', 'Dr. Ava Hall', 'hallhall', '555-555-6666', 'Dermatologist'),
-('dr.green@example.com', 'Dr. Mia Green', 'greenleaf', '555-666-7777', 'Cardiologist'),
-('dr.baker@example.com', 'Dr. Jack Baker', 'bakeitup', '555-777-8888', 'Neurologist'),
-('dr.walker@example.com', 'Dr. Nora Walker', 'walkpass12', '555-888-9999', 'Orthopedist'),
-('dr.young@example.com', 'Dr. Liam Young', 'young123', '555-999-0000', 'Pediatrician'),
-('dr.king@example.com', 'Dr. Zoe King', 'kingkong1', '555-000-1111', 'Dermatologist'),
-('dr.scott@example.com', 'Dr. Lily Scott', 'scottish', '555-111-2223', 'Cardiologist'),
-('dr.evans@example.com', 'Dr. Lucas Evans', 'evansEv1', '555-222-3334', 'Neurologist'),
-('dr.turner@example.com', 'Dr. Grace Turner', 'turnerBurner', '555-333-4445', 'Orthopedist'),
-('dr.hill@example.com', 'Dr. Ethan Hill', 'hillclimb', '555-444-5556', 'Pediatrician'),
-('dr.ward@example.com', 'Dr. Ruby Ward', 'wardWard', '555-555-6667', 'Dermatologist');
+-- Insert doctor availability slots
+INSERT INTO doctor_availability (doctor_id, date, start_time, end_time, availability_type, is_recurring, created_at) VALUES
+(1, '2025-10-02', '09:00:00', '10:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(1, '2025-10-02', '10:00:00', '11:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(1, '2025-10-02', '14:00:00', '15:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(2, '2025-10-02', '10:00:00', '11:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(2, '2025-10-02', '11:00:00', '12:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(2, '2025-10-02', '15:00:00', '16:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(3, '2025-10-02', '08:00:00', '09:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(3, '2025-10-02', '11:00:00', '12:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(3, '2025-10-02', '14:00:00', '15:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(4, '2025-10-02', '09:00:00', '10:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(4, '2025-10-02', '15:00:00', '16:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(5, '2025-10-02', '10:00:00', '11:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP),
+(5, '2025-10-02', '14:00:00', '15:00:00', 'AVAILABLE', false, CURRENT_TIMESTAMP);
 
--- Insert doctor available times (lab format)
-INSERT INTO doctor_available_times (doctor_id, available_times) VALUES
-(1, '09:00-10:00'), (1, '10:00-11:00'), (1, '11:00-12:00'), (1, '14:00-15:00'),
-(2, '10:00-11:00'), (2, '11:00-12:00'), (2, '14:00-15:00'), (2, '15:00-16:00'),
-(3, '09:00-10:00'), (3, '11:00-12:00'), (3, '14:00-15:00'), (3, '16:00-17:00'),
-(4, '09:00-10:00'), (4, '10:00-11:00'), (4, '15:00-16:00'), (4, '16:00-17:00'),
-(5, '09:00-10:00'), (5, '10:00-11:00'), (5, '14:00-15:00'), (5, '15:00-16:00'),
-(6, '09:00-10:00'), (6, '10:00-11:00'), (6, '11:00-12:00'), (6, '14:00-15:00'),
-(7, '09:00-10:00'), (7, '10:00-11:00'), (7, '15:00-16:00'), (7, '16:00-17:00'),
-(8, '10:00-11:00'), (8, '11:00-12:00'), (8, '14:00-15:00'), (8, '15:00-16:00'),
-(9, '09:00-10:00'), (9, '11:00-12:00'), (9, '13:00-14:00'), (9, '14:00-15:00'),
-(10, '10:00-11:00'), (10, '11:00-12:00'), (10, '14:00-15:00'), (10, '16:00-17:00'),
-(11, '09:00-10:00'), (11, '12:00-13:00'), (11, '14:00-15:00'), (11, '15:00-16:00'),
-(12, '10:00-11:00'), (12, '11:00-12:00'), (12, '13:00-14:00'), (12, '14:00-15:00'),
-(13, '13:00-14:00'), (13, '14:00-15:00'), (13, '15:00-16:00'), (13, '16:00-17:00'),
-(14, '09:00-10:00'), (14, '10:00-11:00'), (14, '14:00-15:00'), (14, '16:00-17:00'),
-(15, '10:00-11:00'), (15, '11:00-12:00'), (15, '13:00-14:00'), (15, '14:00-15:00'),
-(16, '09:00-10:00'), (16, '11:00-12:00'), (16, '14:00-15:00'), (16, '16:00-17:00'),
-(17, '09:00-10:00'), (17, '10:00-11:00'), (17, '11:00-12:00'), (17, '12:00-13:00'),
-(18, '09:00-10:00'), (18, '10:00-11:00'), (18, '11:00-12:00'), (18, '15:00-16:00'),
-(19, '13:00-14:00'), (19, '14:00-15:00'), (19, '15:00-16:00'), (19, '16:00-17:00'),
-(20, '10:00-11:00'), (20, '13:00-14:00'), (20, '14:00-15:00'), (20, '15:00-16:00'),
-(21, '09:00-10:00'), (21, '10:00-11:00'), (21, '14:00-15:00'), (21, '15:00-16:00'),
-(22, '10:00-11:00'), (22, '11:00-12:00'), (22, '14:00-15:00'), (22, '16:00-17:00'),
-(23, '11:00-12:00'), (23, '13:00-14:00'), (23, '15:00-16:00'), (23, '16:00-17:00'),
-(24, '12:00-13:00'), (24, '13:00-14:00'), (24, '14:00-15:00'), (24, '15:00-16:00'),
-(25, '09:00-10:00'), (25, '10:00-11:00'), (25, '14:00-15:00'), (25, '15:00-16:00');
-
--- Insert sample patients (lab format)
-INSERT INTO patient (address, email, name, password, phone) VALUES
-('101 Oak St, Cityville', 'jane.doe@example.com', 'Jane Doe', 'passJane1', '888-111-1111'),
-('202 Maple Rd, Townsville', 'john.smith@example.com', 'John Smith', 'smithSecure', '888-222-2222'),
-('303 Pine Ave, Villageton', 'emily.rose@example.com', 'Emily Rose', 'emilyPass99', '888-333-3333'),
-('404 Birch Ln, Metropolis', 'michael.j@example.com', 'Michael Jordan', 'airmj23', '888-444-4444'),
-('505 Cedar Blvd, Springfield', 'olivia.m@example.com', 'Olivia Moon', 'moonshine12', '888-555-5555'),
-('606 Spruce Ct, Gotham', 'liam.k@example.com', 'Liam King', 'king321', '888-666-6666'),
-('707 Aspen Dr, Riverdale', 'sophia.l@example.com', 'Sophia Lane', 'sophieLane', '888-777-7777'),
-('808 Elm St, Newtown', 'noah.b@example.com', 'Noah Brooks', 'noahBest!', '888-888-8888'),
-('909 Willow Way, Star City', 'ava.d@example.com', 'Ava Daniels', 'avaSecure8', '888-999-9999'),
-('111 Chestnut Pl, Midvale', 'william.h@example.com', 'William Harris', 'willH2025', '888-000-0000'),
-('112 Redwood St, Fairview', 'mia.g@example.com', 'Mia Green', 'miagreen1', '889-111-1111'),
-('113 Cypress Rd, Edgewater', 'james.b@example.com', 'James Brown', 'jamiebrown', '889-222-2222'),
-('114 Poplar Ave, Crestwood', 'amelia.c@example.com', 'Amelia Clark', 'ameliacool', '889-333-3333'),
-('115 Sequoia Dr, Elmwood', 'ben.j@example.com', 'Ben Johnson', 'bennyJ', '889-444-4444'),
-('116 Palm Blvd, Harborview', 'ella.m@example.com', 'Ella Monroe', 'ellam123', '889-555-5555'),
-('117 Cottonwood Ct, Laketown', 'lucas.t@example.com', 'Lucas Turner', 'lucasTurn', '889-666-6666'),
-('118 Sycamore Ln, Hilltop', 'grace.s@example.com', 'Grace Scott', 'graceful', '889-777-7777'),
-('119 Magnolia Pl, Brookside', 'ethan.h@example.com', 'Ethan Hill', 'hill2025', '889-888-8888'),
-('120 Fir St, Woodland', 'ruby.w@example.com', 'Ruby Ward', 'rubypass', '889-999-9999'),
-('121 Beech Way, Lakeside', 'jack.b@example.com', 'Jack Baker', 'bakerjack', '889-000-0000'),
-('122 Alder Ave, Pinehill', 'mia.h@example.com', 'Mia Hall', 'hallMia', '890-111-1111'),
-('123 Hawthorn Blvd, Meadowbrook', 'owen.t@example.com', 'Owen Thomas', 'owen123', '890-222-2222'),
-('124 Dogwood Dr, Summit', 'ivy.j@example.com', 'Ivy Jackson', 'ivyIvy', '890-333-3333'),
-('125 Juniper Ct, Greenwood', 'leo.m@example.com', 'Leo Martin', 'leopass', '890-444-4444'),
-('126 Olive Rd, Ashville', 'ella.moore@example.com', 'Ella Moore', 'ellamoore', '890-555-5555');
-
--- Insert sample appointments (lab format - abbreviated for brevity)
-INSERT INTO appointment (appointment_time, status, doctor_id, patient_id) VALUES
-('2025-05-01 09:00:00.000000', 0, 1, 1),
-('2025-05-02 10:00:00.000000', 0, 1, 2),
-('2025-05-03 11:00:00.000000', 0, 1, 3),
-('2025-05-04 14:00:00.000000', 0, 1, 4),
-('2025-05-05 15:00:00.000000', 0, 1, 5),
-('2025-05-06 13:00:00.000000', 0, 2, 6),
-('2025-05-07 09:00:00.000000', 0, 2, 7),
-('2025-05-08 16:00:00.000000', 0, 3, 8),
-('2025-05-09 11:00:00.000000', 0, 3, 9),
-('2025-05-10 10:00:00.000000', 0, 4, 10),
-('2025-05-11 12:00:00.000000', 0, 4, 11),
-('2025-05-12 15:00:00.000000', 0, 5, 12),
-('2025-05-13 13:00:00.000000', 0, 5, 13),
-('2025-05-14 10:00:00.000000', 0, 6, 14),
-('2025-05-15 11:00:00.000000', 0, 7, 15),
-('2025-05-16 14:00:00.000000', 0, 8, 16),
-('2025-05-17 09:00:00.000000', 0, 9, 17),
-('2025-05-18 12:00:00.000000', 0, 10, 18),
-('2025-05-19 13:00:00.000000', 0, 11, 19),
-('2025-05-20 16:00:00.000000', 0, 12, 20),
-('2025-05-21 14:00:00.000000', 1, 13, 21),
-('2025-05-22 10:00:00.000000', 1, 14, 22),
-('2025-05-23 11:00:00.000000', 1, 15, 23),
-('2025-05-24 15:00:00.000000', 1, 16, 24),
-('2025-05-25 09:00:00.000000', 1, 17, 25);
+-- Insert sample appointments with proper entity structure
+INSERT INTO appointments (doctor_id, patient_id, appointment_date, appointment_time, status, appointment_type, reason_for_visit, duration_minutes, created_at, updated_at) VALUES
+(1, 1, '2025-10-15', '09:00:00', 'SCHEDULED', 'Consultation', 'Chest pain evaluation', 60, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1, 2, '2025-10-15', '10:00:00', 'SCHEDULED', 'Follow-up', 'Heart checkup', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 3, '2025-10-16', '10:00:00', 'SCHEDULED', 'Consultation', 'Headache concerns', 45, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 4, '2025-10-16', '11:00:00', 'CONFIRMED', 'Examination', 'Neurological assessment', 60, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3, 5, '2025-10-17', '08:00:00', 'SCHEDULED', 'Surgery Consultation', 'Knee pain evaluation', 45, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

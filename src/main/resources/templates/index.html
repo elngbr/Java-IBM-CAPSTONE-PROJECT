@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Smart Clinic Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏥 Smart Clinic Management System</h1>
+            <p>Complete healthcare management solution for modern clinics</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <a href="/" class="nav-item active">🏠 Dashboard</a>
+            <a href="/patients" class="nav-item">👥 Patients</a>
+            <a href="/doctors" class="nav-item">👨‍⚕️ Doctors</a>
+            <a href="/appointments" class="nav-item">📅 Appointments</a>
+            <a href="/admin" class="nav-item">⚙️ Admin</a>
+            <a href="/h2-console" class="nav-item">💾 Database</a>
+        </nav>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalPatients">-</div>
+                <div class="stat-label">Total Patients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalDoctors">-</div>
+                <div class="stat-label">Active Doctors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalAppointments">-</div>
+                <div class="stat-label">Today's Appointments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalAdmins">-</div>
+                <div class="stat-label">System Admins</div>
+            </div>
+        </div>
+
+        <!-- Main Content Cards -->
+        <div class="card-grid">
+            <div class="card">
+                <h3>👥 Patient Management</h3>
+                <p>Register new patients, manage patient records, view medical history, and handle patient information efficiently.</p>
+                <a href="/patients" class="btn">Manage Patients</a>
+                <button onclick="loadPatients()" class="btn btn-secondary">View List</button>
+            </div>
+
+            <div class="card">
+                <h3>👨‍⚕️ Doctor Management</h3>
+                <p>Manage doctor profiles, specializations, schedules, and availability for optimal clinic operations.</p>
+                <a href="/doctors" class="btn">Manage Doctors</a>
+                <button onclick="loadDoctors()" class="btn btn-secondary">View List</button>
+            </div>
+
+            <div class="card">
+                <h3>📅 Appointment Scheduling</h3>
+                <p>Schedule, reschedule, and manage patient appointments with doctors efficiently and effectively.</p>
+                <a href="/appointments" class="btn">Manage Appointments</a>
+                <button onclick="loadAppointments()" class="btn btn-secondary">View Today</button>
+            </div>
+
+            <div class="card">
+                <h3>⚙️ System Administration</h3>
+                <p>Manage system users, roles, permissions, and overall clinic system configuration.</p>
+                <a href="/admin" class="btn">Admin Panel</a>
+                <button onclick="loadSystemStats()" class="btn btn-secondary">System Stats</button>
+            </div>
+
+            <div class="card">
+                <h3>💾 Database Management</h3>
+                <p>Direct access to the H2 database console for advanced data management and queries.</p>
+                <a href="/h2-console" target="_blank" class="btn">Database Console</a>
+                <button onclick="testConnection()" class="btn btn-secondary">Test Connection</button>
+            </div>
+
+            <div class="card">
+                <h3>📊 API Documentation</h3>
+                <p>Access REST API endpoints for integration with external systems and mobile applications.</p>
+                <button onclick="showApiInfo()" class="btn">API Endpoints</button>
+                <button onclick="testApi()" class="btn btn-secondary">Test API</button>
+            </div>
+        </div>
+
+        <!-- Data Display Area -->
+        <div id="dataDisplay" class="table-container" style="display: none;">
+            <h3 id="dataTitle">Data</h3>
+            <div id="dataContent">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card" style="text-align: center; margin-top: 30px;">
+            <p>Smart Clinic Management System - IBM Developer Skills Network Capstone Project</p>
+            <p style="color: #718096; font-size: 0.9rem;">Built with Spring Boot, H2 Database, and modern web technologies</p>
+        </div>
+    </div>
+
+    <script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

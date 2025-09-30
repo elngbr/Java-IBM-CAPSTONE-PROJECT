@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Doctor Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>👨‍⚕️ Doctor Management</h1>
+            <p>Manage doctor profiles, specializations, and schedules</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <a href="/" class="nav-item">🏠 Dashboard</a>
+            <a href="/patients" class="nav-item">👥 Patients</a>
+            <a href="/doctors" class="nav-item active">👨‍⚕️ Doctors</a>
+            <a href="/appointments" class="nav-item">📅 Appointments</a>
+            <a href="/admin" class="nav-item">⚙️ Admin</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="card-grid">
+            <div class="card">
+                <h3>➕ Add New Doctor</h3>
+                <p>Register a new doctor with specialization and credentials.</p>
+                <button onclick="showNewDoctorForm()" class="btn">New Doctor</button>
+            </div>
+            
+            <div class="card">
+                <h3>🔍 Search Doctors</h3>
+                <p>Find doctors by name, specialization, or license number.</p>
+                <div class="form-group">
+                    <input type="text" id="searchInput" class="form-input" placeholder="Search doctors...">
+                    <button onclick="searchDoctors()" class="btn" style="margin-top: 10px;">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor List -->
+        <div id="doctorList" class="table-container">
+            <h3>👨‍⚕️ All Doctors</h3>
+            <div id="doctorContent">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load doctors on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllDoctors();
+        });
+
+        // Load all doctors
+        async function loadAllDoctors() {
+            const content = document.getElementById('doctorContent');
+            content.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                const response = await axios.get('/api/doctors');
+                const doctors = response.data;
+                
+                if (doctors.length === 0) {
+                    content.innerHTML = '<p>No doctors found. Add your first doctor above!</p>';
+                    return;
+                }
+                
+                let html = `
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>License</th>
+                                <th>Experience</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                doctors.forEach(doctor => {
+                    html += `
+                        <tr>
+                            <td>${doctor.doctorId || 'N/A'}</td>
+                            <td>${doctor.firstName || ''} ${doctor.lastName || ''}</td>
+                            <td>${doctor.specialization || 'N/A'}</td>
+                            <td>${doctor.email || 'N/A'}</td>
+                            <td>${doctor.phoneNumber || 'N/A'}</td>
+                            <td>${doctor.licenseNumber || 'N/A'}</td>
+                            <td>${doctor.yearsExperience || 0} years</td>
+                            <td>
+                                <button class="btn" onclick="viewDoctor(${doctor.doctorId})" style="margin-right: 5px;">View</button>
+                                <button class="btn btn-secondary" onclick="editDoctor(${doctor.doctorId})">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                content.innerHTML = html;
+                
+            } catch (error) {
+                content.innerHTML = '<div class="alert alert-error">Error loading doctors. Please try again.</div>';
+                console.error('Error loading doctors:', error);
+            }
+        }
+
+        // Placeholder functions
+        function showNewDoctorForm() {
+            alert('New Doctor Form\n\nThis feature will be implemented to add new doctors with complete information including specialization, credentials, and schedule.');
+        }
+
+        function searchDoctors() {
+            alert('Doctor Search\n\nThis feature will be implemented to search doctors by various criteria.');
+        }
+
+        function viewDoctor(id) {
+            alert(`View Doctor Details\n\nDoctor ID: ${id}\n\nThis will show complete doctor information including bio, schedule, and patient reviews.`);
+        }
+
+        function editDoctor(id) {
+            alert(`Edit Doctor\n\nDoctor ID: ${id}\n\nThis will open an edit form with current doctor information.`);
+        }
+    </script>
+</body>
+</html>

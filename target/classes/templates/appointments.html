@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Appointment Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📅 Appointment Management</h1>
+            <p>Schedule, manage, and track patient appointments</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <a href="/" class="nav-item">🏠 Dashboard</a>
+            <a href="/patients" class="nav-item">👥 Patients</a>
+            <a href="/doctors" class="nav-item">👨‍⚕️ Doctors</a>
+            <a href="/appointments" class="nav-item active">📅 Appointments</a>
+            <a href="/admin" class="nav-item">⚙️ Admin</a>
+        </nav>
+
+        <!-- Quick Actions -->
+        <div class="card-grid">
+            <div class="card">
+                <h3>➕ Schedule New Appointment</h3>
+                <p>Book a new appointment for a patient with an available doctor.</p>
+                <button onclick="showNewAppointmentForm()" class="btn">New Appointment</button>
+            </div>
+            
+            <div class="card">
+                <h3>📋 Today's Schedule</h3>
+                <p>View all appointments scheduled for today.</p>
+                <button onclick="loadTodayAppointments()" class="btn">Today's Appointments</button>
+            </div>
+            
+            <div class="card">
+                <h3>🔍 Search Appointments</h3>
+                <p>Find appointments by patient name, doctor, or date.</p>
+                <button onclick="showSearchForm()" class="btn">Search</button>
+            </div>
+        </div>
+
+        <!-- Appointment List -->
+        <div id="appointmentList" class="table-container">
+            <h3>📅 All Appointments</h3>
+            <div id="appointmentContent">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load appointments on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllAppointments();
+        });
+
+        // Load all appointments
+        async function loadAllAppointments() {
+            const content = document.getElementById('appointmentContent');
+            content.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                const response = await axios.get('/api/appointments');
+                const appointments = response.data;
+                
+                if (appointments.length === 0) {
+                    content.innerHTML = '<p>No appointments found. Schedule your first appointment above!</p>';
+                    return;
+                }
+                
+                let html = `
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient ID</th>
+                                <th>Doctor ID</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                appointments.forEach(appointment => {
+                    html += `
+                        <tr>
+                            <td>${appointment.appointmentId || 'N/A'}</td>
+                            <td>${appointment.patientId || 'N/A'}</td>
+                            <td>${appointment.doctorId || 'N/A'}</td>
+                            <td>${appointment.appointmentDate || 'N/A'}</td>
+                            <td>${appointment.appointmentTime || 'N/A'}</td>
+                            <td>${appointment.durationMinutes || 30} min</td>
+                            <td><span class="status ${(appointment.status || '').toLowerCase()}">${appointment.status || 'N/A'}</span></td>
+                            <td>
+                                <button class="btn" onclick="viewAppointment(${appointment.appointmentId})" style="margin-right: 5px;">View</button>
+                                <button class="btn btn-secondary" onclick="editAppointment(${appointment.appointmentId})">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                content.innerHTML = html;
+                
+            } catch (error) {
+                content.innerHTML = '<div class="alert alert-error">Error loading appointments. Please try again.</div>';
+                console.error('Error loading appointments:', error);
+            }
+        }
+
+        // Placeholder functions
+        function showNewAppointmentForm() {
+            alert('New Appointment Form\n\nThis feature will be implemented to schedule new appointments with patient and doctor selection, date/time picker, and appointment details.');
+        }
+
+        function loadTodayAppointments() {
+            alert('Today\'s Appointments\n\nThis will filter and show only appointments for today\'s date.');
+        }
+
+        function showSearchForm() {
+            alert('Search Appointments\n\nThis will provide advanced search options by patient, doctor, date range, and status.');
+        }
+
+        function viewAppointment(id) {
+            alert(`View Appointment Details\n\nAppointment ID: ${id}\n\nThis will show complete appointment information including patient details, doctor info, and notes.`);
+        }
+
+        function editAppointment(id) {
+            alert(`Edit Appointment\n\nAppointment ID: ${id}\n\nThis will open an edit form to modify appointment details, reschedule, or update status.`);
+        }
+    </script>
+</body>
+</html>

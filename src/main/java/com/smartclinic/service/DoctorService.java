@@ -36,7 +36,7 @@ public class DoctorService {
         }
         
         // Check phone uniqueness
-        if (doctorRepository.findByPhone(doctor.getPhoneNumber()).isPresent()) {
+        if (doctorRepository.findByPhoneNumber(doctor.getPhoneNumber()).isPresent()) {
             throw new RuntimeException("Doctor with phone " + doctor.getPhoneNumber() + " already exists");
         }
         
@@ -55,13 +55,13 @@ public class DoctorService {
         
         // Check email uniqueness (excluding current doctor)
         if (!doctor.getEmail().equals(doctorDetails.getEmail()) && 
-            doctorRepository.existsByEmailAndIdNot(doctorDetails.getEmail(), id)) {
+            doctorRepository.existsByEmailAndDoctorIdNot(doctorDetails.getEmail(), id)) {
             throw new RuntimeException("Email " + doctorDetails.getEmail() + " is already in use");
         }
         
         // Check phone uniqueness (excluding current doctor)
         if (!doctor.getPhoneNumber().equals(doctorDetails.getPhoneNumber()) && 
-            doctorRepository.existsByPhoneAndIdNot(doctorDetails.getPhoneNumber(), id)) {
+            doctorRepository.existsByPhoneNumberAndDoctorIdNot(doctorDetails.getPhoneNumber(), id)) {
             throw new RuntimeException("Phone " + doctorDetails.getPhoneNumber() + " is already in use");
         }
         

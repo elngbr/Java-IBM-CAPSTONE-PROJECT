@@ -118,7 +118,7 @@ public class AppointmentService {
      * Core functionality for patient portal.
      */
     public List<Appointment> getAppointmentsByPatientId(Long patientId) {
-        return appointmentRepository.findByPatientIdOrderByAppointmentTimeDesc(patientId);
+        return appointmentRepository.findByPatient_PatientIdOrderByAppointmentTimeDesc(patientId);
     }
 
     /**
@@ -126,7 +126,7 @@ public class AppointmentService {
      * Core functionality for doctor portal.
      */
     public List<Appointment> getAppointmentsByDoctorId(Long doctorId) {
-        return appointmentRepository.findByDoctorIdOrderByAppointmentTimeAsc(doctorId);
+        return appointmentRepository.findByDoctor_DoctorIdOrderByAppointmentTimeAsc(doctorId);
     }
 
     /**

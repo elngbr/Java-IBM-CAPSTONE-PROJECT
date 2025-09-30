@@ -20,13 +20,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * Find appointments by patient ID.
      * Core functionality for patient portal - viewing their appointments.
      */
-    List<Appointment> findByPatientIdOrderByAppointmentTimeDesc(Long patientId);
+    List<Appointment> findByPatient_PatientIdOrderByAppointmentTimeDesc(Long patientId);
     
     /**
      * Find appointments by doctor ID.
      * Core functionality for doctor portal - viewing their appointments.
      */
-    List<Appointment> findByDoctorIdOrderByAppointmentTimeAsc(Long doctorId);
+    List<Appointment> findByDoctor_DoctorIdOrderByAppointmentTimeAsc(Long doctorId);
     
     /**
      * Find appointments by status.
@@ -38,7 +38,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * Find upcoming appointments for a patient.
      * Used in patient dashboard to show next appointments.
      */
-    @Query("SELECT a FROM Appointment a WHERE a.patient.id = :patientId " +
+    @Query("SELECT a FROM Appointment a WHERE a.patient.patientId = :patientId " +
            "AND a.appointmentTime >= CURRENT_TIMESTAMP " +
            "ORDER BY a.appointmentTime ASC")
     List<Appointment> findUpcomingAppointmentsByPatientId(@Param("patientId") Long patientId);
@@ -47,7 +47,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * Find upcoming appointments for a doctor.
      * Used in doctor dashboard to show today's and upcoming appointments.
      */
-    @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId " +
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.doctorId = :doctorId " +
            "AND a.appointmentTime >= CURRENT_TIMESTAMP " +
            "ORDER BY a.appointmentTime ASC")
     List<Appointment> findUpcomingAppointmentsByDoctorId(@Param("doctorId") Long doctorId);
@@ -74,7 +74,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * Check for conflicting appointments.
      * Prevents double-booking of doctors at the same time.
      */
-    @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE a.doctor.id = :doctorId " +
+    @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE a.doctor.doctorId = :doctorId " +
            "AND a.appointmentTime = :appointmentTime " +
            "AND a.status != 'CANCELLED'")
     boolean existsByDoctorIdAndAppointmentTime(
@@ -85,8 +85,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * Find appointments by patient and doctor.
      * Used for patient history with specific doctors.
      */
-    @Query("SELECT a FROM Appointment a WHERE a.patient.id = :patientId " +
-           "AND a.doctor.id = :doctorId " +
+    @Query("SELECT a FROM Appointment a WHERE a.patient.patientId = :patientId " +
+           "AND a.doctor.doctorId = :doctorId " +
            "ORDER BY a.appointmentTime DESC")
     List<Appointment> findByPatientIdAndDoctorId(
         @Param("patientId") Long patientId,
@@ -103,7 +103,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * Find today's appointments for a doctor.
      * Used for doctor's daily schedule view.
      */
-    @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId " +
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.doctorId = :doctorId " +
            "AND DATE(a.appointmentTime) = CURRENT_DATE " +
            "ORDER BY a.appointmentTime ASC")
     List<Appointment> findTodaysAppointmentsByDoctorId(@Param("doctorId") Long doctorId);
@@ -123,6 +123,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
            "JOIN FETCH a.doctor d " +
            "JOIN FETCH a.patient p " +
            "WHERE DATE(a.appointmentTime) = DATE(:reportDate) " +
-           "ORDER BY d.name, a.appointmentTime")
+           "ORDER BY d.firstName, d.lastName, a.appointmentTime")
     List<Appointment> findDailyAppointmentReportByDoctor(@Param("reportDate") LocalDateTime reportDate);
 }

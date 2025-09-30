@@ -22,15 +22,15 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
      * Find availability by doctor ID.
      * Core functionality for displaying doctor's schedule.
      */
-    List<DoctorAvailability> findByDoctorIdOrderByAvailableDateAscStartTimeAsc(Long doctorId);
+    List<DoctorAvailability> findByDoctorDoctorIdOrderByDateAscStartTimeAsc(Long doctorId);
     
     /**
      * Find available slots for a doctor on a specific date.
      * Used for appointment booking system.
      */
     @Query("SELECT da FROM DoctorAvailability da WHERE da.doctor.id = :doctorId " +
-           "AND da.availableDate = :date " +
-           "AND da.isAvailable = true " +
+           "AND da.date = :date " +
+           "AND da.availabilityType = 'AVAILABLE' " +
            "ORDER BY da.startTime ASC")
     List<DoctorAvailability> findAvailableSlotsByDoctorAndDate(
         @Param("doctorId") Long doctorId,
@@ -41,10 +41,10 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
      * Used to check if doctor is available for a specific appointment time.
      */
     @Query("SELECT da FROM DoctorAvailability da WHERE da.doctor.id = :doctorId " +
-           "AND da.availableDate = :date " +
+           "AND da.date = :date " +
            "AND da.startTime <= :time " +
            "AND da.endTime >= :time " +
-           "AND da.isAvailable = true")
+           "AND da.availabilityType = 'AVAILABLE'")
     Optional<DoctorAvailability> findByDoctorIdAndDateAndTime(
         @Param("doctorId") Long doctorId,
         @Param("date") LocalDate date,
@@ -55,8 +55,8 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
      * Used in doctor portal to show upcoming available slots.
      */
     @Query("SELECT da FROM DoctorAvailability da WHERE da.doctor.id = :doctorId " +
-           "AND da.availableDate >= CURRENT_DATE " +
-           "ORDER BY da.availableDate ASC, da.startTime ASC")
+           "AND da.date >= CURRENT_DATE " +
+           "ORDER BY da.date ASC, da.startTime ASC")
     List<DoctorAvailability> findUpcomingAvailabilityByDoctorId(@Param("doctorId") Long doctorId);
     
     /**
@@ -64,8 +64,8 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
      * Used for availability management and reporting.
      */
     @Query("SELECT da FROM DoctorAvailability da WHERE da.doctor.id = :doctorId " +
-           "AND da.availableDate BETWEEN :startDate AND :endDate " +
-           "ORDER BY da.availableDate ASC, da.startTime ASC")
+           "AND da.date BETWEEN :startDate AND :endDate " +
+           "ORDER BY da.date ASC, da.startTime ASC")
     List<DoctorAvailability> findByDoctorIdAndDateBetween(
         @Param("doctorId") Long doctorId,
         @Param("startDate") LocalDate startDate,
@@ -76,7 +76,7 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
      * Prevents creating conflicting availability slots for the same doctor.
      */
     @Query("SELECT COUNT(da) > 0 FROM DoctorAvailability da WHERE da.doctor.id = :doctorId " +
-           "AND da.availableDate = :date " +
+           "AND da.date = :date " +
            "AND ((da.startTime <= :startTime AND da.endTime > :startTime) " +
            "OR (da.startTime < :endTime AND da.endTime >= :endTime) " +
            "OR (da.startTime >= :startTime AND da.endTime <= :endTime))")
@@ -90,20 +90,20 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
      * Find all available dates for a doctor.
      * Used for calendar view and date selection in appointment booking.
      */
-    @Query("SELECT DISTINCT da.availableDate FROM DoctorAvailability da " +
+    @Query("SELECT DISTINCT da.date FROM DoctorAvailability da " +
            "WHERE da.doctor.id = :doctorId " +
-           "AND da.availableDate >= CURRENT_DATE " +
-           "AND da.isAvailable = true " +
-           "ORDER BY da.availableDate ASC")
+           "AND da.date >= CURRENT_DATE " +
+           "AND da.availabilityType = 'AVAILABLE' " +
+           "ORDER BY da.date ASC")
     List<LocalDate> findAvailableDatesByDoctorId(@Param("doctorId") Long doctorId);
     
     /**
      * Find availability by date (all doctors).
      * Used for daily schedule overview and clinic management.
      */
-    @Query("SELECT da FROM DoctorAvailability da WHERE da.availableDate = :date " +
-           "AND da.isAvailable = true " +
-           "ORDER BY da.doctor.name, da.startTime")
+    @Query("SELECT da FROM DoctorAvailability da WHERE da.date = :date " +
+           "AND da.availabilityType = 'AVAILABLE' " +
+           "ORDER BY da.doctor.firstName, da.doctor.lastName, da.startTime")
     List<DoctorAvailability> findByAvailableDate(@Param("date") LocalDate date);
     
     /**
@@ -111,21 +111,20 @@ public interface DoctorAvailabilityRepository extends JpaRepository<DoctorAvaila
      * Used for doctor workload analysis and reporting.
      */
     @Query("SELECT COUNT(da) FROM DoctorAvailability da WHERE da.doctor.id = :doctorId " +
-           "AND da.isAvailable = true " +
-           "AND da.availableDate >= CURRENT_DATE")
+           "AND da.availabilityType = 'AVAILABLE' " +
+           "AND da.date >= CURRENT_DATE")
     Long countAvailableSlotsByDoctorId(@Param("doctorId") Long doctorId);
     
     /**
      * Update availability status.
      * Used when appointments are booked or cancelled.
      */
-    @Query("UPDATE DoctorAvailability da SET da.isAvailable = :isAvailable " +
+    @Query("UPDATE DoctorAvailability da SET da.availabilityType = 'UNAVAILABLE' " +
            "WHERE da.doctor.id = :doctorId " +
-           "AND da.availableDate = :date " +
+           "AND da.date = :date " +
            "AND da.startTime = :startTime")
     void updateAvailabilityStatus(
         @Param("doctorId") Long doctorId,
         @Param("date") LocalDate date,
-        @Param("startTime") LocalTime startTime,
-        @Param("isAvailable") Boolean isAvailable);
+        @Param("startTime") LocalTime startTime);
 }

@@ -18,29 +18,22 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     
     /**
      * Find patient by email address.
-     * Used for authentication and unique email validation.
+     * Used for authentication and profile management.
      */
     Optional<Patient> findByEmail(String email);
     
     /**
      * Find patient by phone number.
-     * Used for patient lookup and contact verification.
+     * Useful for contact verification and lookup.
      */
-    Optional<Patient> findByPhone(String phone);
+    Optional<Patient> findByPhoneNumber(String phoneNumber);
     
     /**
-     * Find patients by name (case-insensitive search).
-     * Supports partial name matching for patient search functionality.
+     * Find patients by name with case-insensitive partial matching.
+     * Supports partial name search for patient lookup.
      */
-    @Query("SELECT p FROM Patient p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    @Query("SELECT p FROM Patient p WHERE LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Patient> findByNameContainingIgnoreCase(@Param("name") String name);
-    
-    /**
-     * Find patients by age range.
-     * Useful for demographic analysis and age-specific treatments.
-     */
-    @Query("SELECT p FROM Patient p WHERE p.age BETWEEN :minAge AND :maxAge")
-    List<Patient> findByAgeBetween(@Param("minAge") Integer minAge, @Param("maxAge") Integer maxAge);
     
     /**
      * Find patients by gender.
@@ -49,32 +42,38 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByGender(String gender);
     
     /**
-     * Check if email already exists (excluding current patient).
-     * Used for email uniqueness validation during updates.
+     * Find patients by blood type.
+     * Critical for emergency medical situations.
      */
-    @Query("SELECT COUNT(p) > 0 FROM Patient p WHERE p.email = :email AND p.id != :patientId")
-    boolean existsByEmailAndIdNot(@Param("email") String email, @Param("patientId") Long patientId);
+    List<Patient> findByBloodType(String bloodType);
     
     /**
-     * Check if phone number already exists (excluding current patient).
-     * Used for phone uniqueness validation during updates.
+     * Find active patients only.
+     * Standard filter for active patient records.
      */
-    @Query("SELECT COUNT(p) > 0 FROM Patient p WHERE p.phone = :phone AND p.id != :patientId")
-    boolean existsByPhoneAndIdNot(@Param("phone") String phone, @Param("patientId") Long patientId);
+    List<Patient> findByIsActiveTrue();
     
     /**
-     * Find active patients (those with recent appointments).
-     * Used for active patient reporting and engagement analysis.
+     * Count total active patients.
+     * Used for administrative reporting and statistics.
+     */
+    @Query("SELECT COUNT(p) FROM Patient p WHERE p.isActive = true")
+    Long countActivePatients();
+    
+    /**
+     * Find patients with upcoming appointments.
+     * Useful for patient engagement and scheduling.
      */
     @Query("SELECT DISTINCT p FROM Patient p " +
            "JOIN p.appointments a " +
-           "WHERE a.appointmentTime >= CURRENT_DATE - 90")
-    List<Patient> findActivePatients();
+           "WHERE a.appointmentDate >= CURRENT_DATE " +
+           "AND a.status IN ('SCHEDULED', 'CONFIRMED') " +
+           "ORDER BY p.firstName, p.lastName")
+    List<Patient> findPatientsWithUpcomingAppointments();
     
     /**
-     * Count total patients.
-     * Used for dashboard statistics and reporting.
+     * Find patients by emergency contact.
+     * Used for emergency contact searches.
      */
-    @Query("SELECT COUNT(p) FROM Patient p")
-    Long countTotalPatients();
+    List<Patient> findByEmergencyContactNameContainingIgnoreCase(String contactName);
 }

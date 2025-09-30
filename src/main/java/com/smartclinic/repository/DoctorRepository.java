@@ -19,27 +19,27 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     
     /**
      * Find doctor by email address.
-     * Used for authentication and unique email validation.
+     * Used for authentication and profile management.
      */
     Optional<Doctor> findByEmail(String email);
     
     /**
      * Find doctor by phone number.
-     * Used for contact verification and lookup.
+     * Useful for contact verification and emergency scenarios.
      */
-    Optional<Doctor> findByPhone(String phone);
+    Optional<Doctor> findByPhoneNumber(String phoneNumber);
     
     /**
-     * Find doctors by specialization.
-     * Core functionality for patient search and appointment booking.
+     * Find doctors by specialization with case-insensitive matching.
+     * Essential for patient search and appointment booking.
      */
     List<Doctor> findBySpecializationContainingIgnoreCase(String specialization);
     
     /**
-     * Find doctors by name (case-insensitive search).
+     * Find doctors by name with case-insensitive partial matching.
      * Supports partial name matching for doctor search functionality.
      */
-    @Query("SELECT d FROM Doctor d WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    @Query("SELECT d FROM Doctor d WHERE LOWER(CONCAT(d.firstName, ' ', d.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Doctor> findByNameContainingIgnoreCase(@Param("name") String name);
     
     /**
@@ -47,70 +47,97 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * Critical for appointment booking system.
      */
     @Query("SELECT DISTINCT d FROM Doctor d " +
-           "JOIN d.availableTimes da " +
+           "JOIN d.availabilitySlots da " +
            "WHERE LOWER(d.specialization) LIKE LOWER(CONCAT('%', :specialization, '%')) " +
-           "AND da.availableDate = DATE(:dateTime) " +
-           "AND da.startTime <= TIME(:dateTime) " +
-           "AND da.endTime >= TIME(:dateTime) " +
-           "AND da.isAvailable = true")
+           "AND da.date = CAST(:dateTime AS DATE) " +
+           "AND da.startTime <= CAST(:dateTime AS TIME) " +
+           "AND da.endTime >= CAST(:dateTime AS TIME) " +
+           "AND da.availabilityType = 'AVAILABLE' " +
+           "AND d.isActive = true")
     List<Doctor> findAvailableDoctorsBySpecializationAndTime(
-        @Param("specialization") String specialization, 
-        @Param("dateTime") LocalDateTime dateTime);
+        @Param("specialization") String specialization,
+        @Param("dateTime") LocalDateTime dateTime
+    );
     
     /**
      * Find doctors with upcoming appointments.
-     * Used for doctor dashboard and schedule management.
+     * Useful for workload management and scheduling.
      */
     @Query("SELECT DISTINCT d FROM Doctor d " +
            "JOIN d.appointments a " +
-           "WHERE a.appointmentTime >= CURRENT_TIMESTAMP " +
-           "ORDER BY d.name")
+           "WHERE a.appointmentDate >= CURRENT_DATE " +
+           "AND a.status IN ('SCHEDULED', 'CONFIRMED') " +
+           "ORDER BY d.firstName, d.lastName")
     List<Doctor> findDoctorsWithUpcomingAppointments();
     
     /**
-     * Find doctor with most appointments in a date range.
-     * Used for performance reporting and workload analysis.
+     * Find doctors ordered by their appointment count.
+     * Helps in workload balancing and performance metrics.
      */
     @Query("SELECT d FROM Doctor d " +
-           "JOIN d.appointments a " +
-           "WHERE a.appointmentTime BETWEEN :startDate AND :endDate " +
-           "GROUP BY d.id " +
-           "ORDER BY COUNT(a) DESC")
+           "LEFT JOIN d.appointments a " +
+           "WHERE a.appointmentDate BETWEEN :startDate AND :endDate " +
+           "GROUP BY d.doctorId " +
+           "ORDER BY COUNT(a.appointmentId) DESC")
     List<Doctor> findDoctorsOrderedByAppointmentCount(
         @Param("startDate") LocalDateTime startDate,
-        @Param("endDate") LocalDateTime endDate);
+        @Param("endDate") LocalDateTime endDate
+    );
     
     /**
-     * Check if email already exists (excluding current doctor).
-     * Used for email uniqueness validation during updates.
+     * Find active doctors only.
+     * Standard filter for active practitioners.
      */
-    @Query("SELECT COUNT(d) > 0 FROM Doctor d WHERE d.email = :email AND d.id != :doctorId")
-    boolean existsByEmailAndIdNot(@Param("email") String email, @Param("doctorId") Long doctorId);
+    List<Doctor> findByIsActiveTrue();
     
     /**
-     * Check if phone number already exists (excluding current doctor).
-     * Used for phone uniqueness validation during updates.
+     * Find doctors by years of experience range.
+     * Useful for filtering based on experience requirements.
      */
-    @Query("SELECT COUNT(d) > 0 FROM Doctor d WHERE d.phone = :phone AND d.id != :doctorId")
-    boolean existsByPhoneAndIdNot(@Param("phone") String phone, @Param("doctorId") Long doctorId);
+    List<Doctor> findByYearsExperienceBetween(Integer minYears, Integer maxYears);
     
     /**
-     * Find all specializations available in the system.
-     * Used for filter dropdowns and specialization management.
+     * Count total active doctors.
+     * Used for administrative reporting and statistics.
      */
-    @Query("SELECT DISTINCT d.specialization FROM Doctor d ORDER BY d.specialization")
+    @Query("SELECT COUNT(d) FROM Doctor d WHERE d.isActive = true")
+    Long countActiveDoctors();
+    
+    /**
+     * Find doctors by office location.
+     * Helps patients find nearby healthcare providers.
+     */
+    List<Doctor> findByOfficeLocationContainingIgnoreCase(String location);
+    
+    /**
+     * Check if email exists for another doctor (not the given ID).
+     * Used during updates to prevent duplicate emails.
+     */
+    boolean existsByEmailAndDoctorIdNot(String email, Long doctorId);
+    
+    /**
+     * Check if phone number exists for another doctor (not the given ID).
+     * Used during updates to prevent duplicate phone numbers.
+     */
+    boolean existsByPhoneNumberAndDoctorIdNot(String phoneNumber, Long doctorId);
+    
+    /**
+     * Find all unique specializations.
+     * Useful for dropdown lists and filtering.
+     */
+    @Query("SELECT DISTINCT d.specialization FROM Doctor d WHERE d.specialization IS NOT NULL ORDER BY d.specialization")
     List<String> findAllSpecializations();
     
     /**
-     * Count total doctors.
-     * Used for dashboard statistics and reporting.
+     * Count total doctors (alternative method name).
+     * Used for administrative reporting.
      */
     @Query("SELECT COUNT(d) FROM Doctor d")
     Long countTotalDoctors();
     
     /**
      * Count doctors by specialization.
-     * Used for specialization distribution analysis.
+     * Returns a map-like structure for reporting.
      */
     @Query("SELECT d.specialization, COUNT(d) FROM Doctor d GROUP BY d.specialization")
     List<Object[]> countDoctorsBySpecialization();

@@ -3,6 +3,8 @@ package com.smartclinic.controller;
 import com.smartclinic.model.Prescription;
 import com.smartclinic.repository.PrescriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/prescriptions")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@ConditionalOnBean(MongoTemplate.class)
 public class PrescriptionController {
 
     @Autowired

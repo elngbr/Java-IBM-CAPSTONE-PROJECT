@@ -1,5 +1,5 @@
-com/smartclinic/repository/PrescriptionRepository.class
 com/smartclinic/model/Prescription$Medication.class
+com/smartclinic/controller/WebController.class
 com/smartclinic/model/Prescription$DigitalSignature.class
 com/smartclinic/service/DoctorService.class
 com/smartclinic/repository/PatientRepository.class
@@ -7,7 +7,6 @@ com/smartclinic/SmartClinicManagementApplication.class
 com/smartclinic/model/Patient.class
 com/smartclinic/repository/DoctorAvailabilityRepository.class
 com/smartclinic/model/Appointment.class
-com/smartclinic/controller/PrescriptionController.class
 com/smartclinic/model/DoctorAvailability$AvailabilityType.class
 com/smartclinic/model/Prescription$PharmacyInfo.class
 com/smartclinic/service/AppointmentService.class
